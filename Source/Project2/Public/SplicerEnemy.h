@@ -26,4 +26,20 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SplicerHP = 10;
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* AttackColl;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USplicerFSM* MySplicerFSM;
+
+	UFUNCTION() //총알과 부딪힐 때, HP-- 및 기타 상호작용을 수행함.
+	void OnBulletCompBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult);
 };
