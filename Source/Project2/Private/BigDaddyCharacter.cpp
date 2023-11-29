@@ -7,11 +7,9 @@
 #include "Bullet.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/PointLightComponent.h"
-#include "Engine/SkeletalMeshSocket.h"
+#include "Components/RectLightComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystem.h"
-#include "Particles/ParticleSystemComponent.h"
 
 
 // Sets default values
@@ -24,10 +22,9 @@ ABigDaddyCharacter::ABigDaddyCharacter()
 	MyFSMComponent = CreateDefaultSubobject<UBigDaddyFSM>(TEXT("BigDaddyFSM"));
 	AttackCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("AttackColl"));
 	AttackCollision->SetupAttachment(GetMesh(),FName("hand_r"));
-	HPPntLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("MyPntLight"));
-	HPPntLight->SetupAttachment(RootComponent);
 	DrillHand = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Drill"));
 	DrillHand->SetupAttachment(GetMesh(),TEXT("hand_r"));
+	BigDaddySpotLight = CreateDefaultSubobject<URectLightComponent>(TEXT("BigDaddyLight")); 
 	/* 에셋 불러오기 */
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkelMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/LDJ/Resource/BigDaddy/Animation/Idle/Mutant_Breathing_Idle_Main.Mutant_Breathing_Idle_Main'"));
 	if (SkelMeshRef.Object)
@@ -62,7 +59,8 @@ ABigDaddyCharacter::ABigDaddyCharacter()
 	
 	GetCharacterMovement()->MaxWalkSpeed = 0;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	HPPntLight->SetVisibleFlag(true);
+	BigDaddySpotLight->SetRelativeLocation(FVector(0,0,200));
+	BigDaddySpotLight->SetRelativeRotation(FRotator(-90,0,0));
 }
 
 // Called when the game starts or when spawned
@@ -78,18 +76,6 @@ void ABigDaddyCharacter::BeginPlay()
 void ABigDaddyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (HP < 30 && HP >= 20)
-	{
-		HPPntLight->SetLightColor(FLinearColor::Green);
-	}
-	else if(HP < 20 && HP >= 10)
-	{
-		HPPntLight -> SetLightColor(FLinearColor::Yellow);
-	}
-	else if(HP < 10 && HP >= 1)
-	{
-		HPPntLight -> SetLightColor(FLinearColor::Red);
-	}
 }
 
 // Called to bind functionality to input
@@ -108,7 +94,6 @@ void ABigDaddyCharacter::OnBulletCompBeginOverlap(UPrimitiveComponent* Overlappe
 	{
 		return;
 	}
-	HPPntLight->SetVisibleFlag(true);
 	MyFSMComponent->ChangeState = 1;
 	HP--;
 	Bullet->Destroy();
@@ -121,7 +106,6 @@ void ABigDaddyCharacter::OnBulletCompBeginOverlap(UPrimitiveComponent* Overlappe
 	if (HP == 0)
 	{
 		MyFSMComponent->RageState = EBigDaddyRageState::Dying;
-		HPPntLight->SetLightColor(FLinearColor::Black);
 	}
 }
 

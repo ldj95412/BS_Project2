@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SplicerFSM.generated.h"
+#include "GunSplicerFSM.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECT2_API USplicerFSM : public UActorComponent
+class PROJECT2_API UGunSplicerFSM : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	USplicerFSM();
+	UGunSplicerFSM();
 
 protected:
 	// Called when the game starts
@@ -23,38 +23,33 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UPROPERTY()
+	class AGunSplicerEnemy* Me;
 
 	UPROPERTY()
-	class ASplicerEnemy* Me;
-
-	UPROPERTY()
-	class UAnimInstance* SplicerAnim;
+	class UAnimInstance* GunSplicerAnim;
 	
 	UPROPERTY()
 	class ABioshockPlayer* MyPlayer;
 	
 	UPROPERTY()
-	int32 SplicerState = 0;
+	int32 GunSplicerState = 0;
 	//0은 경계
 	//1은 발견 후 이동
-	//2는 빠르게 이동
-	//3은 공격
+	//2은 공격
 	//.. 반복
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DetectingRange = 1000;
+	float DetectingRange = 2000;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AttackRange = 100;
+	float AttackRange = 1000;
 
 	void TickIdle();
 	void TickWalk();
-	void TickRun();
 	void TickAttack();
 	void TickDying();
-	void TickCrawl();
-	void TickCrawlAttack();
-	void TickTrueDie();
 	
 	float CurrentTime;
 
@@ -63,21 +58,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	TObjectPtr<class UAnimMontage> DyingMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	TObjectPtr<class UAnimMontage> TrueDyingMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	TObjectPtr<class UAnimMontage> CrawlMontage;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	TObjectPtr<class UAnimMontage> CrawlAttackMontage;
-
 	UFUNCTION()
-	void MeleeDyingStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
-
-	UFUNCTION()
-	void TrueDyingStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+	void DyingStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Character)//사운드
 	USoundBase* PlayerHitSound1;
@@ -87,6 +70,4 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= Character)//사운드
 	USoundBase* PlayerHitSound3;
-
 };
-

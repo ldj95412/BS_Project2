@@ -4,11 +4,13 @@
 #include "SplicerEnemy.h"
 
 #include "BigDaddyCharacter.h"
+#include "BioshockPlayer.h"
 #include "Bullet.h"
 #include "SplicerFSM.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASplicerEnemy::ASplicerEnemy()
@@ -32,6 +34,8 @@ ASplicerEnemy::ASplicerEnemy()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 0;
+	AttackColl->SetCollisionProfileName(FName("Enemy"));
+	AttackColl->SetGenerateOverlapEvents(false);
 }
 
 // Called when the game starts or when spawned
@@ -39,7 +43,6 @@ void ASplicerEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this,&ASplicerEnemy::OnBulletCompBeginOverlap);
-	
 }
 
 // Called every frame

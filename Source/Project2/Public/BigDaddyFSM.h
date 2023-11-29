@@ -189,8 +189,7 @@ public:
 
 	UFUNCTION()
 	void Spear3Ended(UAnimMontage* Montage, bool bInterrupted);
-
-
+	
 	UFUNCTION()
 	void AttackStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 

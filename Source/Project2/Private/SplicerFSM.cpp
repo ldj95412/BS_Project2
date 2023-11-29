@@ -6,6 +6,7 @@
 #include "BioshockPlayer.h"
 #include "SplicerEnemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 USplicerFSM::USplicerFSM()
@@ -28,8 +29,8 @@ void USplicerFSM::BeginPlay()
 	Me = Cast<ASplicerEnemy>(GetOwner());
 	SplicerAnim = Me->GetMesh()->GetAnimInstance();
 
-	SplicerAnim->OnPlayMontageNotifyBegin.AddDynamic(this, &USplicerFSM::DyingStarted);
-	SplicerAnim->OnMontageEnded.AddDynamic(this, &USplicerFSM::TrueDyingStarted);
+	SplicerAnim->OnPlayMontageNotifyBegin.AddDynamic(this, &USplicerFSM::MeleeDyingStarted);
+	SplicerAnim->OnPlayMontageNotifyBegin.AddDynamic(this, &USplicerFSM::TrueDyingStarted);
 }
 
 
@@ -130,7 +131,20 @@ void USplicerFSM::TickAttack()
 		{
 			//공격 몽타주 실행
 			SplicerAnim->Montage_Play(AttackMontage , 2);
-		
+			MyPlayer->HP--;
+			float RandNum = FMath::RandRange(0,2);
+			if (RandNum == 0)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), PlayerHitSound1, 0.75,1,0.35);
+			}
+			else if(RandNum == 1)
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), PlayerHitSound2, 0.75,1,0.08);
+			}
+			else
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), PlayerHitSound3, 0.75,1,0.15);
+			}
 			SplicerState = 3;
 		}
 		else if(MyDir.Size() > AttackRange)
@@ -176,6 +190,20 @@ void USplicerFSM::TickCrawlAttack()
 	if (!SplicerAnim->Montage_IsPlaying(CrawlAttackMontage))
 	{
 		SplicerAnim->Montage_Play(CrawlAttackMontage, 2);
+		MyPlayer->HP--;
+		float RandNum = FMath::RandRange(0,2);
+		if (RandNum == 0)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), PlayerHitSound1, 0.75,1,0.35);
+		}
+		else if(RandNum == 1)
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), PlayerHitSound2, 0.75,1,0.08);
+		}
+		else
+		{
+			UGameplayStatics::PlaySound2D(GetWorld(), PlayerHitSound3, 0.75,1,0.15);
+		}
 	}
 	else
 	{
@@ -198,17 +226,15 @@ void USplicerFSM::TickCrawlAttack()
 void USplicerFSM::TickTrueDie()
 {
 	//내려가는 몽타주
-	static int32 TrueDieFlag = 0;
 	Me->GetCharacterMovement()->MaxWalkSpeed = 0;
-	if (!SplicerAnim->Montage_IsPlaying(TrueDyingMontage) && TrueDieFlag == 0)
+	if (!SplicerAnim->Montage_IsPlaying(TrueDyingMontage))
 	{
 		SplicerAnim->Montage_Play(TrueDyingMontage);
-		TrueDieFlag++;
 		//진행중이면 노티파이에 의해 상태 5로 넘어감
 	}
 }
 
-void USplicerFSM::DyingStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+void USplicerFSM::MeleeDyingStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
 	if (NotifyName == FName("CrawlMode"))
 	{
@@ -216,9 +242,9 @@ void USplicerFSM::DyingStarted(FName NotifyName, const FBranchingPointNotifyPayl
 	}
 }
 
-void USplicerFSM::TrueDyingStarted(UAnimMontage* Montage, bool bInterrupted)
+void USplicerFSM::TrueDyingStarted(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-	if (Montage == TrueDyingMontage)
+	if (NotifyName == FName("TrueDie"))
 	{
 		Me->Destroy();
 	}

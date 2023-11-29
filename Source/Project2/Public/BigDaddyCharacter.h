@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere) //빅대디 체력 상태에 따라 빛의 색상이 신호등 형태로 바뀜
 	TObjectPtr<class UPointLightComponent> HPPntLight;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class URectLightComponent> BigDaddySpotLight;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly) //빅대디의 AI 컴포넌트
 	TObjectPtr<class UBigDaddyFSM> MyFSMComponent;
 	

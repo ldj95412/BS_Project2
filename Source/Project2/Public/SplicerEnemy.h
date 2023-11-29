@@ -19,7 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -37,9 +37,10 @@ public:
 
 	UFUNCTION() //총알과 부딪힐 때, HP-- 및 기타 상호작용을 수행함.
 	void OnBulletCompBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult);
+	                              AActor* OtherActor,
+	                              UPrimitiveComponent* OtherComp,
+	                              int32 OtherBodyIndex,
+	                              bool bFromSweep,
+	                              const FHitResult& SweepResult);
+	
 };
