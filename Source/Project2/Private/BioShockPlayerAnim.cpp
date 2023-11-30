@@ -16,7 +16,7 @@ void UBioShockPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	}
 
 	if (nullptr == player)
-	{	
+	{
 		return;
 	}
 	FVector forward = player->GetActorForwardVector();
@@ -31,30 +31,41 @@ void UBioShockPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
-void UBioShockPlayerAnim::PlayPistolReloadAnim()
+void UBioShockPlayerAnim::PlayShotgunArmReloadAnim()
 {
-	Montage_Play(PistolReloadAnimMontage);
+	if (ShotgunArmReloadAnimMontage) {
+		Montage_Play(ShotgunArmReloadAnimMontage);
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("UBioShockPlayerAnim::PlayShotgunArmReloadAnim"));
+	}
 }
 
-void UBioShockPlayerAnim::PlayShotgunReloadAnim()
+
+void UBioShockPlayerAnim::PlaySubgunArmReloadAnim()
 {
-	Montage_Play(ShotgunReloadAnimMontage);
+	Montage_Play(SubgunArmReloadAnimMontage);
 }
 
-
-void UBioShockPlayerAnim::PlayPistolFireAnim()
-{
-	Montage_Play(PistolFireAnimMontage);
-}
 
 void UBioShockPlayerAnim::PlayShotgunFireAnim()
 {
 	Montage_Play(ShotgunFireAnimMontage);
 }
 
-void UBioShockPlayerAnim::PlayElectricFireAnim()
+void UBioShockPlayerAnim::PlayKnifeWieldAnim()
 {
-	Montage_Play(ElectricFireAnimMontage);
+	Montage_Play(KnifeWieldAnimMontage);
+}
+
+void UBioShockPlayerAnim::PlaySubgunFireAnim(float PlayRate)
+{
+	Montage_Play(SubgunFireAnimMontage);
+}
+
+void UBioShockPlayerAnim::PlayShotgunEquipAnim()
+{
+	Montage_Play(ShotgunEquipAnimMontage);
 }
 
 //void UBioShockPlayerAnim::NativeInitializeAnimation(float DeltaSeconds)

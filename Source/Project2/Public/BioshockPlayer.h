@@ -48,24 +48,28 @@ public:
 	void InputJump();
 	void Move();
 	void ActionFire();
+	void FireReleased();
+
 	void ActionReload();
 	
 	void PrimaryWeapon();
 	void SecondaryWeapon();
-	void ActionSuperPower();
+	void ThridWeapon();
 
-	void FirePistol();
 	void FireShotgun();
-	void FireSuperpower();
-
-	UPROPERTY(VisibleAnywhere, Category=GunMesh)
-	class USkeletalMeshComponent* PistolComp;
+	void WieldKnife();
+	void FireSubgun();
 
 	UPROPERTY(VisibleAnywhere, Category=GunMesh)
 	class USkeletalMeshComponent* ShotgunComp;
+	UPROPERTY(VisibleAnywhere, Category=GunMesh)
+	class USkeletalMeshComponent* KnifeComp;
+	UPROPERTY(VisibleAnywhere, Category=GunMesh)
+	class USkeletalMeshComponent* SubgunComp;
 
-	UPROPERTY(VisibleAnywhere)
-	class USkeletalMeshComponent* SuperpowerEffect;
+
+	/*UPROPERTY(VisibleAnywhere)
+	class USkeletalMeshComponent* SuperpowerEffect;*/
 
 
 	UPROPERTY(EditAnywhere)
@@ -87,4 +91,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 HP = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MP = 10;
+
+	UPROPERTY()
+	FTimerHandle Handle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UCameraShakeBase> CameraShakeShotgun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UCameraShakeBase> CameraShakeSubgun;
+
+
+
 };
