@@ -37,23 +37,28 @@ public:
 	int32 GunState;
 
 	UPROPERTY(EditAnywhere)
-	class UAnimMontage* PistolReloadAnimMontage;
+	class UAnimMontage* ShotgunArmReloadAnimMontage;
 	UPROPERTY(EditAnywhere)
-	class UAnimMontage* ShotgunReloadAnimMontage;
+	class UAnimMontage* SubgunArmReloadAnimMontage;
 
-	UPROPERTY(EditAnywhere)
-	class UAnimMontage* PistolFireAnimMontage;
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* ShotgunFireAnimMontage;
 	UPROPERTY(EditAnywhere)
-	class UAnimMontage* ElectricFireAnimMontage;
+	class UAnimMontage* KnifeWieldAnimMontage;
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* SubgunFireAnimMontage;
 
-	void PlayPistolReloadAnim();
-	void PlayShotgunReloadAnim();
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* ShotgunEquipAnimMontage;
 
-	void PlayPistolFireAnim();
+	void PlayShotgunArmReloadAnim();
+	void PlaySubgunArmReloadAnim();
+
 	void PlayShotgunFireAnim();
-	void PlayElectricFireAnim();
+	void PlayKnifeWieldAnim();
+	void PlaySubgunFireAnim(float PlayRate = 1);
+
+	void PlayShotgunEquipAnim();
 
 
 
