@@ -118,6 +118,7 @@ void ABigDaddyCharacter::OnAttackBeginOverlap(UPrimitiveComponent* OverlappedCom
 		return;
 	}
 	AttackCollision->SetGenerateOverlapEvents(false);
+	Player->HP--;
 	UGameplayStatics::PlaySound2D(GetWorld(), AtkPunchSound, 6,1,0.15);
 	float RandNum = FMath::RandRange(0,2);
 	if (RandNum == 0)
