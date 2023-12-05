@@ -93,7 +93,7 @@ public:
 	int32 HP = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MP = 10;
+	int32 MP = 5;
 
 	UPROPERTY()
 	FTimerHandle Handle;
@@ -104,6 +104,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UCameraShakeBase> CameraShakeSubgun;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	USoundBase* ShotgunSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	USoundBase* KnifeSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	USoundBase* SubgunSound;
 
+	FRotator current;
+	FRotator target;
+	FVector currentLocation;
+	FVector targetLocation;
 
+	bool bDieflag = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 SubGunBullet = 22;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 SubGunBulletHouse = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MPSyrinder = 5;
 };

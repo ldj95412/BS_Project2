@@ -8,7 +8,7 @@
 void UBioShockPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 {
 
-	// ���ʸ� �����ͼ� ��ȿ�� üũ�� �ϰ��ʹ�
+	// 오너를 가져와서 유효성 체크를 하고싶다
 	if (nullptr == player)
 	{
 		auto owner = TryGetPawnOwner();
@@ -27,7 +27,7 @@ void UBioShockPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	UCharacterMovementComponent* movement = player->GetCharacterMovement();
 	//isFalling = movement->IsFalling();
 
-	GunState = player->GunState; // ���ϸ��̼� ���� ��ȭ, cast�� �Ŀ� �����
+	GunState = player->GunState; // 에니메이션 상태 변화, cast한 후에 써야함
 
 }
 

@@ -16,14 +16,17 @@
 #include "PlayerFSM.h"
 #include "Components/PointLightComponent.h"
 #include "BioShockPlayerAnim.h"
+#include "GunSplicerEnemy.h"
+#include "SplicerEnemy.h"
 #include "WeaponAnim.h"
+#include "WeaponAnim_Subgun.h"
 
 // Sets default values
 ABioshockPlayer::ABioshockPlayer()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	springArmComp->SetupAttachment(RootComponent);
 	springArmComp->SetRelativeLocation(FVector(6.910811f, 0.166791f, 89.999999f));
@@ -36,8 +39,9 @@ ABioshockPlayer::ABioshockPlayer()
 	bUseControllerRotationYaw = true;
 
 	GetMesh()->SetupAttachment(playerCamComp);
-	
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/Demo/PlayerMannequin/Mesh/Arms.Arms'"));
+
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT(
+		"/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/Demo/PlayerMannequin/Mesh/Arms.Arms'"));
 	if (TempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(TempMesh.Object);
@@ -49,7 +53,8 @@ ABioshockPlayer::ABioshockPlayer()
 	// 부모 컴포넌트를 Mesh 컴포넌트로 설정
 	ShotgunComp->SetupAttachment(GetMesh(), TEXT("R_Socket"));
 	// 스켈레탈메시 데이터 로드
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempShotGunMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/GunModels/SHOTGUNS/SK_SHOTGUN3.SK_SHOTGUN3'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempShotGunMesh(TEXT(
+		"/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/GunModels/SHOTGUNS/SK_SHOTGUN3.SK_SHOTGUN3'"));
 	// 데이터 로드 성공했다면 
 	if (TempShotGunMesh.Succeeded())
 	{
@@ -66,7 +71,8 @@ ABioshockPlayer::ABioshockPlayer()
 	// 부모 컴포넌트를 Mesh 컴포넌트로 설정
 	KnifeComp->SetupAttachment(GetMesh(), TEXT("R_Socket"));
 	// 스켈레탈메시 데이터 로드
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempKnifeMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/GunModels/MELEE/SK_knife.SK_knife'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempKnifeMesh(
+		TEXT("/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/GunModels/MELEE/SK_knife.SK_knife'"));
 	// 데이터 로드 성공했다면 
 	if (TempKnifeMesh.Succeeded())
 	{
@@ -83,14 +89,15 @@ ABioshockPlayer::ABioshockPlayer()
 	// 부모 컴포넌트를 Mesh 컴포넌트로 설정
 	SubgunComp->SetupAttachment(GetMesh(), TEXT("R_Socket"));
 	// 스켈레탈메시 데이터 로드
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempSubgunMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/GunModels/SUBMACHINEGUNS/SK_SUBMACHINEGUN4.SK_SUBMACHINEGUN4'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempSubgunMesh(TEXT(
+		"/Script/Engine.SkeletalMesh'/Game/KJY/UltimateFPSAnimationsKIT/GunModels/SUBMACHINEGUNS/SK_SUBMACHINEGUN4.SK_SUBMACHINEGUN4'"));
 	// 데이터 로드 성공했다면 
 	if (TempSubgunMesh.Succeeded())
 	{
 		// 스켈레탈메시 데이터 할당
 		SubgunComp->SetSkeletalMesh(TempSubgunMesh.Object);
 		// 위치 조정
-		SubgunComp->SetRelativeLocation(FVector(2.275763, -2.349950, 7.232812));
+		SubgunComp->SetRelativeLocation(FVector(2.526746, -1.180282, 7.328504));
 		SubgunComp->SetRelativeRotation(FRotator(6.031903, 68.297558, -351.781684));
 		SubgunComp->SetRelativeScale3D(FVector(1.0f));
 	}
@@ -103,7 +110,6 @@ void ABioshockPlayer::BeginPlay()
 	// PowerPosition = GetMesh()->GetSocketTransform(TEXT("Effect_SuperPower"));
 
 	GunState = 1;
-	
 }
 
 // Called every frame
@@ -112,15 +118,13 @@ void ABioshockPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	Move();
-
-	
 }
 
 // Called to bind functionality to input
 void ABioshockPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
+
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ABioshockPlayer::Turn);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ABioshockPlayer::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ABioshockPlayer::InputHorizontal);
@@ -133,7 +137,6 @@ void ABioshockPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction(TEXT("SecondaryWeapon"), IE_Pressed, this, &ABioshockPlayer::SecondaryWeapon);
 	PlayerInputComponent->BindAction(TEXT("ThridWeapon"), IE_Pressed, this, &ABioshockPlayer::ThridWeapon);
 	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &ABioshockPlayer::ActionReload);
-
 }
 
 void ABioshockPlayer::Turn(float value)
@@ -149,7 +152,6 @@ void ABioshockPlayer::LookUp(float value)
 void ABioshockPlayer::InputHorizontal(float value)
 {
 	direction.Y = value;
-
 }
 
 void ABioshockPlayer::InputVertical(float value)
@@ -171,13 +173,11 @@ void ABioshockPlayer::Move()
 	SetActorLocation(P);*/
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
-
 }
 
 
 void ABioshockPlayer::ActionFire()
 {
-
 	if (GunState == 1)
 	{
 		FireShotgun();
@@ -202,19 +202,28 @@ void ABioshockPlayer::ActionReload()
 	if (GunState == 1)
 	{
 		auto anim = Cast<UBioShockPlayerAnim>(GetMesh()->GetAnimInstance());
-		anim->PlayShotgunArmReloadAnim();
+		if (!anim->Montage_IsPlaying(anim->ShotgunArmReloadAnimMontage) && MP < 5 && MPSyrinder > 0)
+		{
+			anim->PlayShotgunArmReloadAnim();
 
-		auto animGun = Cast<UWeaponAnim>(ShotgunComp->GetAnimInstance());
-		animGun->PlayShotgunReloadAnim();
-
+			auto animGun = Cast<UWeaponAnim>(ShotgunComp->GetAnimInstance());
+			animGun->PlayShotgunReloadAnim();
+			MP++;
+			MPSyrinder--;
+		}
 	}
 	else if (GunState == 3)
 	{
 		auto anim = Cast<UBioShockPlayerAnim>(GetMesh()->GetAnimInstance());
-		anim->PlaySubgunArmReloadAnim();
+		if (!anim->Montage_IsPlaying(anim->SubgunArmReloadAnimMontage) && SubGunBullet < 22 && SubGunBulletHouse > 0)
+		{
+			anim->PlaySubgunArmReloadAnim();
 
-		//auto animGun = Cast<UWeaponAnim>(GetMesh()->GetAnimInstance());
-		//animGun->PlaySubgunReloadAnim();
+			auto animGun = Cast<UWeaponAnim_Subgun>(SubgunComp->GetAnimInstance());
+			animGun->PlaySubgunReloadAnim();
+			SubGunBullet = 22;
+			SubGunBulletHouse--;
+		}
 	}
 }
 
@@ -231,15 +240,13 @@ void ABioshockPlayer::PrimaryWeapon()
 
 void ABioshockPlayer::SecondaryWeapon()
 {
-	
 	ShotgunComp->SetVisibility(false);
 	KnifeComp->SetVisibility(true);
 	SubgunComp->SetVisibility(false);
 
 	/*ShotgunComp->SetRelativeLocation((FVector(-0.272120, 0.121134, 0.078478)));*/
-	
-	GunState = 2;
 
+	GunState = 2;
 }
 
 void ABioshockPlayer::ThridWeapon()
@@ -256,80 +263,135 @@ void ABioshockPlayer::ThridWeapon()
 
 void ABioshockPlayer::FireShotgun()
 {
-	auto controller = GetWorld()->GetFirstPlayerController();
-	controller->PlayerCameraManager->StartCameraShake(CameraShakeShotgun);
-
 	auto anim = Cast<UBioShockPlayerAnim>(GetMesh()->GetAnimInstance());
-	anim->PlayShotgunFireAnim();
+	if (MP > 0 && !anim->Montage_IsPlaying(anim->ShotgunArmReloadAnimMontage))
+	{
+		if (!anim->Montage_IsPlaying(anim->ShotgunFireAnimMontage))
+		{
+			auto controller = GetWorld()->GetFirstPlayerController();
+			controller->PlayerCameraManager->StartCameraShake(CameraShakeShotgun);
 
-	
-	//총알(번개)을 생성해서 플레이어 오른손에 배치
-	FTransform firePosition;
-	firePosition.SetLocation(GetActorLocation()+GetActorForwardVector()*100+GetActorUpVector()*50);
-	firePosition.SetRotation(GetActorRotation().Quaternion());
-	// 그위치에서 발사 
-	GetWorld()->SpawnActor<ABullet>(BulletFactory, firePosition);
+			anim->PlayShotgunFireAnim();
+			MP--;
 
+			//총알(번개)을 생성해서 플레이어 오른손에 배치
+			FTransform firePosition;
+			firePosition.SetLocation(GetActorLocation() + GetActorForwardVector() * 100 + GetActorUpVector() * 50);
+			firePosition.SetRotation(GetControlRotation().Quaternion());
+		
+			GetWorld()->SpawnActor<ABullet>(BulletFactory, firePosition);
 
+			UGameplayStatics::PlaySound2D(GetWorld(), ShotgunSound, 0.75);
+		}
+	}
 }
 
 void ABioshockPlayer::WieldKnife()
 {
 	auto anim = Cast<UBioShockPlayerAnim>(GetMesh()->GetAnimInstance());
-	anim->PlayKnifeWieldAnim();
+	if (!anim->Montage_IsPlaying(anim->KnifeWieldAnimMontage))
+	{
+		anim->PlayKnifeWieldAnim();
+
+		FVector startPos = playerCamComp->GetComponentLocation();
+		FVector endPos = playerCamComp->GetComponentLocation() + playerCamComp->GetForwardVector() * 150;
+		FHitResult hitInfo;
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+		if (bHit)
+		{
+			UKismetSystemLibrary::DrawDebugLine(GetWorld(), startPos, hitInfo.ImpactPoint, FLinearColor::Blue, 1, 1);
+			ABigDaddyCharacter* BigDaddyHit = Cast<ABigDaddyCharacter>(hitInfo.GetActor());
+			ASplicerEnemy* SplicerHit = Cast<ASplicerEnemy>(hitInfo.GetActor());
+			AGunSplicerEnemy* GunSplicerHit = Cast<AGunSplicerEnemy>(hitInfo.GetActor());
+			if (BigDaddyHit)
+			{
+				auto FSM = BigDaddyHit->GetDefaultSubobjectByName(TEXT("EnemyFSM"));
+				BigDaddyHit->HP--;
+				BigDaddyHit->MyFSMComponent->ChangeState = 1;
+				if (BigDaddyHit->HP == 0)
+				{
+					BigDaddyHit->MyFSMComponent->RageState = EBigDaddyRageState::Dying;
+				}
+			}
+			if (SplicerHit)
+			{
+				SplicerHit->SplicerHP--;
+			}
+			if (GunSplicerHit)
+			{
+				GunSplicerHit->GunSplicerHP--;
+			}
+		}
+		UGameplayStatics::PlaySound2D(GetWorld(), KnifeSound, 2);
+	}
 }
 
 void ABioshockPlayer::FireSubgun()
 {
-	auto controller = GetWorld()->GetFirstPlayerController();
-	controller->PlayerCameraManager->StartCameraShake(CameraShakeSubgun);
-
 	auto anim = Cast<UBioShockPlayerAnim>(GetMesh()->GetAnimInstance());
-	anim->PlaySubgunFireAnim();
-
-	FVector startPos = playerCamComp->GetComponentLocation();
-	FVector endPos = playerCamComp->GetComponentLocation() + playerCamComp->GetForwardVector() * 5000;
-	FHitResult hitInfo;
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(this);
-	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
-	if (bHit)
+	if (SubGunBullet > 0 && !anim->Montage_IsPlaying(anim->SubgunArmReloadAnimMontage))
 	{
-		FTransform bulletTrans;
-		bulletTrans.SetLocation(hitInfo.ImpactPoint);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+		auto controller = GetWorld()->GetFirstPlayerController();
+		controller->PlayerCameraManager->StartCameraShake(CameraShakeSubgun);
+		SubGunBullet--;
 
-	}
-	UKismetSystemLibrary::DrawDebugLine(GetWorld(), startPos, hitInfo.ImpactPoint, FLinearColor::Red, 1, 1);
+		anim->PlaySubgunFireAnim();
 
-	ABigDaddyCharacter* BigDaddyHit = Cast<ABigDaddyCharacter>(hitInfo.GetActor());
-	if (BigDaddyHit)
-	{
-		//너 맞았어. 라고 알려주고싶다.
-		// enemy->EnemyFSM 이게 더 빠르고 편하긴 하다.
-		auto FSM = BigDaddyHit->GetDefaultSubobjectByName(TEXT("EnemyFSM"));
-
-		BigDaddyHit->HP--;
-
-		// UEnemyFSM* enemyFSM = Cast<UEnemyFSM>(FSM);
-		// enemyFSM->OnTakeDamage(1);
-		BigDaddyHit->MyFSMComponent->ChangeState = 1;
-		if (BigDaddyHit->HP == 0)
+		FVector startPos = playerCamComp->GetComponentLocation();
+		FVector endPos = playerCamComp->GetComponentLocation() + playerCamComp->GetForwardVector() * 5000;
+		FHitResult hitInfo;
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+		if (bHit)
 		{
-			BigDaddyHit->MyFSMComponent->RageState = EBigDaddyRageState::Dying;
-			BigDaddyHit->HPPntLight->SetLightColor(FLinearColor::Black);
+			FTransform bulletTrans;
+			bulletTrans.SetLocation(hitInfo.ImpactPoint);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+		}
+		UKismetSystemLibrary::DrawDebugLine(GetWorld(), startPos, hitInfo.ImpactPoint, FLinearColor::Red, 1, 1);
+
+		UGameplayStatics::PlaySound2D(GetWorld(), SubgunSound, 2);
+
+		ABigDaddyCharacter* BigDaddyHit = Cast<ABigDaddyCharacter>(hitInfo.GetActor());
+		ASplicerEnemy* SplicerHit = Cast<ASplicerEnemy>(hitInfo.GetActor());
+		AGunSplicerEnemy* GunSplicerHit = Cast<AGunSplicerEnemy>(hitInfo.GetActor());
+
+		if (BigDaddyHit)
+		{
+			auto FSM = BigDaddyHit->GetDefaultSubobjectByName(TEXT("EnemyFSM"));
+			BigDaddyHit->HP--;
+			BigDaddyHit->MyFSMComponent->ChangeState = 1;
+			if (BigDaddyHit->HP == 0)
+			{
+				BigDaddyHit->MyFSMComponent->RageState = EBigDaddyRageState::Dying;
+				BigDaddyHit->HPPntLight->SetLightColor(FLinearColor::Black);
+			}
+		}
+		if (SplicerHit)
+		{
+			SplicerHit->SplicerHP--;
+		}
+		if (GunSplicerHit)
+		{
+			GunSplicerHit->GunSplicerHP--;
 		}
 
-	}
-
-	GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([this]()-> void
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([this]()-> void
 		{
+			if (SubGunBullet == 1)
+			{
+				GetWorld()->GetTimerManager().PauseTimer(Handle);
+			}
 			auto controller = GetWorld()->GetFirstPlayerController();
 			controller->PlayerCameraManager->StartCameraShake(CameraShakeSubgun);
 
 
 			auto anim = Cast<UBioShockPlayerAnim>(GetMesh()->GetAnimInstance());
 			anim->PlaySubgunFireAnim(2);
+			SubGunBullet--;
 
 			FVector startPos = playerCamComp->GetComponentLocation();
 			FVector endPos = playerCamComp->GetComponentLocation() + playerCamComp->GetForwardVector() * 5000;
@@ -342,31 +404,33 @@ void ABioshockPlayer::FireSubgun()
 				FTransform bulletTrans;
 				bulletTrans.SetLocation(hitInfo.ImpactPoint);
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
-
 			}
 			UKismetSystemLibrary::DrawDebugLine(GetWorld(), startPos, hitInfo.ImpactPoint, FLinearColor::Red, 1, 1);
 
+			UGameplayStatics::PlaySound2D(GetWorld(), SubgunSound, 2);
+
 			ABigDaddyCharacter* BigDaddyHit = Cast<ABigDaddyCharacter>(hitInfo.GetActor());
+			ASplicerEnemy* SplicerHit = Cast<ASplicerEnemy>(hitInfo.GetActor());
+			AGunSplicerEnemy* GunSplicerHit = Cast<AGunSplicerEnemy>(hitInfo.GetActor());
 			if (BigDaddyHit)
 			{
-				//너 맞았어. 라고 알려주고싶다.
-				// enemy->EnemyFSM 이게 더 빠르고 편하긴 하다.
 				auto FSM = BigDaddyHit->GetDefaultSubobjectByName(TEXT("EnemyFSM"));
-
 				BigDaddyHit->HP--;
-
-				// UEnemyFSM* enemyFSM = Cast<UEnemyFSM>(FSM);
-				// enemyFSM->OnTakeDamage(1);
 				BigDaddyHit->MyFSMComponent->ChangeState = 1;
 				if (BigDaddyHit->HP == 0)
 				{
 					BigDaddyHit->MyFSMComponent->RageState = EBigDaddyRageState::Dying;
-					BigDaddyHit->HPPntLight->SetLightColor(FLinearColor::Black);
 				}
-
 			}
-		}), 0.2, true);	
+			if (SplicerHit)
+			{
+				SplicerHit->SplicerHP--;
+			}
+			if (GunSplicerHit)
+			{
+				GunSplicerHit->GunSplicerHP--;
+			}
+		}), 0.2, true);
+	}
+
 }
-
-
-	
